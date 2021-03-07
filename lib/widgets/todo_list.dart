@@ -11,6 +11,8 @@ class TodoList extends StatefulWidget {
 class _TodoListState extends State<TodoList> {
   List<TODOItem> items = [];
 
+  //TODO: Save the TODO list on storage
+
   addTodoItem({String value = "", bool done = false}) async {
     String newDescription = await promptTask(value);
     if(newDescription==null){
