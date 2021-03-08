@@ -7,12 +7,13 @@ typedef TODOListItemCallback = void Function(TODOItem todoItem);
 
 class TODOListItem extends StatefulWidget {
   TODOListItem(
-      {@required this.item, this.onStateChange, this.onEdit, this.onDelete})
+      {@required this.item, this.onStateChange, this.onEdit, this.onDelete, this.color})
       : super(key: ObjectKey(item));
   final TODOItem item;
   final TODOListItemCallback onStateChange;
   final TODOListItemCallback onEdit;
   final TODOListItemCallback onDelete;
+  final Color color;
 
   @override
   _TODOListItemState createState() => _TODOListItemState();
@@ -35,7 +36,6 @@ class _TODOListItemState extends State<TODOListItem> {
   Widget build(BuildContext context) {
     return Slidable(
       child: Container(
-        color: Colors.white,
         child: InkWell(
           onLongPress: Feedback.wrapForLongPress(
               () => widget.onEdit?.call(widget.item), context),
@@ -43,7 +43,7 @@ class _TODOListItemState extends State<TODOListItem> {
           child: CheckboxListTile(
               controlAffinity: ListTileControlAffinity.leading,
               value: widget.item.done,
-              tileColor: widget.item.done ? Colors.green[100] : Colors.white,
+              tileColor: widget.color,
               title: Text(widget.item.description),
               onChanged: (bool selected) {
                 toggleItemState();

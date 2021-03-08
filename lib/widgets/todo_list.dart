@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hodes_todo_app/model/todo_item.dart';
+import 'package:hodes_todo_app/services/todo_list_service.dart';
 import 'package:hodes_todo_app/widgets/todo_list_item.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 
@@ -9,37 +10,54 @@ class TodoList extends StatefulWidget {
 }
 
 class _TodoListState extends State<TodoList> {
+
+  final todoListService = TODOListService();
+
   List<TODOItem> items = [];
 
-  //TODO: Save the TODO list on storage
+  @override
+  void initState() {
+    super.initState();
+    this.initializeAsync();
+  }
+
+  initializeAsync() async {
+    await this._loadItems();
+    setState(() {});
+  }
+
+  _loadItems() async {
+    items = await todoListService.getAll();
+  }
 
   addTodoItem({String value = "", bool done = false}) async {
     String newDescription = await promptTask(value);
-    if(newDescription==null){
+    if (newDescription == null) {
       return;
     }
+    TODOItem newTODOItem = TODOItem(
+      description: newDescription,
+      done: done,
+    );
+    await todoListService.saveItem(newTODOItem);
     setState(() {
-      items.add(TODOItem(
-        description: newDescription,
-        done: done,
-      ));
+      items.add(newTODOItem);
     });
   }
 
-  selectTodoItem(TODOItem item) {
-    print('Item changed: ${item.description} now is '+(item.done? 'completed' : 'TODO'));
+  selectTodoItem(TODOItem item) async {
+    await todoListService.saveItem(item);
   }
 
-  deleteListItem(TODOItem item) {
-    setState(() {
-      items.remove(item);
-    });
+  deleteListItem(TODOItem item) async {
+      await todoListService.deleteItem(item.id);
+      setState(() {
+        items.remove(item);
+      });
   }
 
   Future<String> promptTask(String currentValue, {bool edit = false}) async {
-    String title = edit ?
-        'Editar Tarefa' :
-        'Adicionar Tarefa';
+    String title = edit ? 'Editar Tarefa' : 'Adicionar Tarefa';
     return await prompt(
       context,
       title: Text(title),
@@ -52,15 +70,15 @@ class _TodoListState extends State<TodoList> {
 
   editItem(TODOItem item) async {
     String newDescription = await promptTask(item.description, edit: true);
-    if(newDescription==null){
+    if (newDescription == null) {
       return;
     }
-    setState(() {
-      item.description = newDescription;
-    });
+    item.description = newDescription;
+    await todoListService.saveItem(item);
+    setState(() {});
   }
 
-  Widget todoListItems(List<TODOItem> items) {
+  Widget todoListItems(List<TODOItem> items, ThemeData theme) {
     if (items.isEmpty) {
       return Center(
         child: Column(
@@ -70,7 +88,9 @@ class _TodoListState extends State<TodoList> {
               Icons.check_circle_outline,
               size: 50,
             ),
-            SizedBox(height: 20,),
+            SizedBox(
+              height: 20,
+            ),
             Text(
               'Sua lista está vazia !',
               style: TextStyle(fontSize: 16),
@@ -79,6 +99,7 @@ class _TodoListState extends State<TodoList> {
         ),
       );
     }
+    bool even = true;
     return ListView(
       children: items
           .map((TODOItem i) => TODOListItem(
@@ -94,17 +115,16 @@ class _TodoListState extends State<TodoList> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: theme.backgroundColor,
       body: Padding(
         padding: EdgeInsets.fromLTRB(10, 10, 10, 35),
         child: Card(
           elevation: 5,
           clipBehavior: Clip.antiAlias,
-          child: todoListItems(items),
+          child: todoListItems(items, theme),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: theme.primaryColorDark,
+        color: theme.primaryColor,
         shape: const CircularNotchedRectangle(),
         child: Container(
           height: 50.0,

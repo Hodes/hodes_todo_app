@@ -11,8 +11,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Hodes TODO App',
-      theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
+      theme: ThemeData.dark().copyWith(
+        primaryColor: Colors.blueGrey[800]
       ),
       home: TODOHome(title: 'Hodes TODO App'),
     );
@@ -32,7 +32,6 @@ class _TODOHomeState extends State<TODOHome> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: theme.primaryColorDark,
         title: Text(widget.title),
       ),
       body: TodoList(),
