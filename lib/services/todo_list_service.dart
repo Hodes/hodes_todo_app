@@ -1,9 +1,11 @@
+import 'dart:async';
+
 import 'package:hodes_todo_app/model/todo_item.dart';
 import 'package:hodes_todo_app/services/database_service.dart';
 import 'package:sembast/sembast.dart';
 
 class TODOListService  {
-  String storeName;
+  String? storeName;
 
   TODOListService() {
     storeName = "todo_list";
@@ -20,9 +22,8 @@ class TODOListService  {
   Future<List<TODOItem>> getAll() async {
     DatabaseService dbs = DatabaseService();
     StoreRef store = dbs.getMapStore(storeName);
-    var records = await store.find(
-        await dbs.db, finder: Finder()
-    );
+    Database? db = await dbs.db;
+    var records = await store.find(db!, finder: Finder());
     List<TODOItem> result = [];
     for (var record in records) {
       result.add(recordToModel(record));
@@ -33,8 +34,8 @@ class TODOListService  {
   Future<TODOItem> saveItem(TODOItem item) async {
     DatabaseService dbs = DatabaseService();
     StoreRef store = dbs.getMapStore(storeName);
-    Database db = await dbs.db;
-    await db.transaction((transaction) async {
+    Database? db = await dbs.db;
+    await db?.transaction((transaction) async {
       if (item.id == null) {
         int key = await store.add(transaction, item.toMap());
         item.id = key;
@@ -45,11 +46,11 @@ class TODOListService  {
     return item;
   }
 
-  Future<TODOItem> getItem(int id) async {
+  Future<TODOItem?> getItem(int id) async {
     DatabaseService dbs = DatabaseService();
     StoreRef store = dbs.getMapStore(storeName);
-    Database db = await dbs.db;
-    var record = await store.record(id).get(db);
+    Database? db = await dbs.db;
+    var record = await store.record(id).get(db!);
     if(record != null){
       return recordToModel(record);
     }else{
@@ -57,12 +58,12 @@ class TODOListService  {
     }
   }
 
-  Future<bool> deleteItem(int id) async {
+  Future<bool> deleteItem(int? id) async {
     DatabaseService dbs = DatabaseService();
     StoreRef store = dbs.getMapStore(storeName);
-    Database db = await dbs.db;
+    Database? db = await dbs.db;
     try{
-      await db.transaction((transaction) async {
+      await db?.transaction((transaction) async {
         await store.record(id).delete(transaction);
       });
       return true;

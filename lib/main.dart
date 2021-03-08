@@ -20,8 +20,8 @@ class MyApp extends StatelessWidget {
 }
 
 class TODOHome extends StatefulWidget {
-  TODOHome({Key key, this.title}) : super(key: key);
-  final String title;
+  TODOHome({Key? key, this.title}) : super(key: key);
+  final String? title;
   @override
   _TODOHomeState createState() => _TODOHomeState();
 }
@@ -32,7 +32,7 @@ class _TODOHomeState extends State<TODOHome> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title!),
       ),
       body: TodoList(),
     );

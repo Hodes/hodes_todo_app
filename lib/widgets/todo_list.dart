@@ -31,7 +31,7 @@ class _TodoListState extends State<TodoList> {
   }
 
   addTodoItem({String value = "", bool done = false}) async {
-    String newDescription = await promptTask(value);
+    String? newDescription = await promptTask(value);
     if (newDescription == null) {
       return;
     }
@@ -56,7 +56,7 @@ class _TodoListState extends State<TodoList> {
       });
   }
 
-  Future<String> promptTask(String currentValue, {bool edit = false}) async {
+  Future<String?> promptTask(String? currentValue, {bool edit = false}) async {
     String title = edit ? 'Editar Tarefa' : 'Adicionar Tarefa';
     return await prompt(
       context,
@@ -69,7 +69,7 @@ class _TodoListState extends State<TodoList> {
   }
 
   editItem(TODOItem item) async {
-    String newDescription = await promptTask(item.description, edit: true);
+    String? newDescription = await promptTask(item.description, edit: true);
     if (newDescription == null) {
       return;
     }

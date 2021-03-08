@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
@@ -14,9 +15,9 @@ class DatabaseService {
   }
   DatabaseService._internal();
 
-  Database _db;
+  Database? _db;
 
-  Future<Database> get db async {
+  Future<Database?> get db async {
     if(_db != null){
       return _db;
     }
@@ -27,7 +28,7 @@ class DatabaseService {
     return _db;
   }
 
-  StoreRef getMapStore(String storeName) {
+  StoreRef getMapStore(String? storeName) {
     return intMapStoreFactory.store(storeName);
   }
 

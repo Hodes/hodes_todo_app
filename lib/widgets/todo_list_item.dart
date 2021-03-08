@@ -7,13 +7,13 @@ typedef TODOListItemCallback = void Function(TODOItem todoItem);
 
 class TODOListItem extends StatefulWidget {
   TODOListItem(
-      {@required this.item, this.onStateChange, this.onEdit, this.onDelete, this.color})
+      {required this.item, this.onStateChange, this.onEdit, this.onDelete, this.color})
       : super(key: ObjectKey(item));
   final TODOItem item;
-  final TODOListItemCallback onStateChange;
-  final TODOListItemCallback onEdit;
-  final TODOListItemCallback onDelete;
-  final Color color;
+  final TODOListItemCallback? onStateChange;
+  final TODOListItemCallback? onEdit;
+  final TODOListItemCallback? onDelete;
+  final Color? color;
 
   @override
   _TODOListItemState createState() => _TODOListItemState();
@@ -27,7 +27,7 @@ class _TODOListItemState extends State<TODOListItem> {
 
   toggleItemState() {
     setState(() {
-      widget.item.done = !widget.item.done;
+      widget.item.done = !widget.item.done!;
       widget.onStateChange?.call(widget.item);
     });
   }
@@ -44,8 +44,8 @@ class _TODOListItemState extends State<TODOListItem> {
               controlAffinity: ListTileControlAffinity.leading,
               value: widget.item.done,
               tileColor: widget.color,
-              title: Text(widget.item.description),
-              onChanged: (bool selected) {
+              title: Text(widget.item.description!),
+              onChanged: (bool? selected) {
                 toggleItemState();
               }),
         ),
