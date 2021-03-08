@@ -104,6 +104,7 @@ class _TodoListState extends State<TodoList> {
       children: items
           .map((TODOItem i) => TODOListItem(
                 item: i,
+                color: (even=!even) ? theme.highlightColor : null,
                 onStateChange: (TODOItem item) => selectTodoItem(item),
                 onEdit: (TODOItem item) => editItem(item),
                 onDelete: (TODOItem item) => deleteListItem(item),
