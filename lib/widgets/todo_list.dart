@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hodes_todo_app/model/todo_item.dart';
 import 'package:hodes_todo_app/services/todo_list_service.dart';
+import 'package:hodes_todo_app/widgets/loading_placeholder.dart';
 import 'package:hodes_todo_app/widgets/todo_list_item.dart';
 import 'package:prompt_dialog/prompt_dialog.dart';
 
@@ -10,24 +11,25 @@ class TodoList extends StatefulWidget {
 }
 
 class _TodoListState extends State<TodoList> {
-
   final todoListService = TODOListService();
 
+  bool loadingContent = true;
   List<TODOItem> items = [];
 
   @override
   void initState() {
     super.initState();
-    this.initializeAsync();
+    this.loadItems();
   }
 
-  initializeAsync() async {
-    await this._loadItems();
-    setState(() {});
-  }
-
-  _loadItems() async {
-    items = await todoListService.getAll();
+  loadItems() async {
+    setState(() {
+      this.loadingContent = true;
+    });
+    this.items = await todoListService.getAll();
+    setState(() {
+      this.loadingContent = false;
+    });
   }
 
   addTodoItem({String value = "", bool done = false}) async {
@@ -50,18 +52,17 @@ class _TodoListState extends State<TodoList> {
   }
 
   deleteListItem(TODOItem item) async {
-      await todoListService.deleteItem(item.id);
-      setState(() {
-        items.remove(item);
-      });
+    await todoListService.deleteItem(item.id);
+    setState(() {
+      items.remove(item);
+    });
   }
 
   Future<String?> promptTask(String? currentValue, {bool edit = false}) async {
-    String title = edit ? 'Editar Tarefa' : 'Adicionar Tarefa';
+    String title = edit ? 'Edit Task' : 'Add Task';
     return await prompt(
       context,
       title: Text(title),
-      textCancel: Text('Cancelar'),
       initialValue: currentValue,
       maxLines: 3,
       autoFocus: true,
@@ -92,8 +93,12 @@ class _TodoListState extends State<TodoList> {
               height: 20,
             ),
             Text(
-              'Sua lista está vazia !',
-              style: TextStyle(fontSize: 16),
+              'There\'s nothing to do 😃 !',
+              style: TextStyle(fontSize: 22),
+            ),
+            Text(
+              'Is this a good thing ? 😅',
+              style: TextStyle(fontSize: 12),
             )
           ],
         ),
@@ -104,11 +109,12 @@ class _TodoListState extends State<TodoList> {
       children: items
           .map((TODOItem i) => TODOListItem(
                 item: i,
-                color: (even=!even) ? theme.highlightColor : null,
+                color: (even = !even) ? theme.highlightColor : null,
                 onStateChange: (TODOItem item) => selectTodoItem(item),
                 onEdit: (TODOItem item) => editItem(item),
                 onDelete: (TODOItem item) => deleteListItem(item),
-              )).toList(),
+              ))
+          .toList(),
     );
   }
 
@@ -121,7 +127,10 @@ class _TodoListState extends State<TodoList> {
         child: Card(
           elevation: 5,
           clipBehavior: Clip.antiAlias,
-          child: todoListItems(items, theme),
+          child: LoadingPlaceholder(
+            loading: loadingContent,
+            child: todoListItems(items, theme),
+          ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
