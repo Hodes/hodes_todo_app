@@ -41,20 +41,45 @@ class _TodoListState extends State<TodoList> {
       description: newDescription,
       done: done,
     );
-    await todoListService.saveItem(newTODOItem);
+    await todoListService.saveModel(newTODOItem);
     setState(() {
       items.add(newTODOItem);
     });
   }
 
   selectTodoItem(TODOItem item) async {
-    await todoListService.saveItem(item);
+    await todoListService.saveModel(item);
   }
 
   deleteListItem(TODOItem item) async {
-    await todoListService.deleteItem(item.id);
+    await todoListService.deleteModel(item.id);
     setState(() {
       items.remove(item);
+    });
+  }
+
+  reorderListItems(int oldIndex, int newIndex) async {
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+    TODOItem oldItem = this.items.elementAt(oldIndex);
+    oldItem.order = newIndex;
+    TODOItem newItem = this.items.elementAt(newIndex);
+    newItem.order = oldIndex;
+    await todoListService.saveModel(oldItem);
+    await todoListService.saveModel(newItem);
+    todoListService.sortModels(this.items);
+    setState(() {});
+  }
+
+  cleanDoneItems() async {
+    for(TODOItem item in items){
+      if(item.done == true){
+        await todoListService.deleteModel(item.id);
+      }
+    }
+    setState(() {
+      items = items.where((element) => !element.done).toList();
     });
   }
 
@@ -75,11 +100,13 @@ class _TodoListState extends State<TodoList> {
       return;
     }
     item.description = newDescription;
-    await todoListService.saveItem(item);
+    await todoListService.saveModel(item);
     setState(() {});
   }
 
   Widget todoListItems(List<TODOItem> items, ThemeData theme) {
+    final oddItemColor = theme.colorScheme.primary.withOpacity(0.05);
+    final evenItemColor = theme.colorScheme.primary.withOpacity(0.15);
     if (items.isEmpty) {
       return Center(
         child: Column(
@@ -105,16 +132,22 @@ class _TodoListState extends State<TodoList> {
       );
     }
     bool even = true;
-    return ListView(
-      children: items
-          .map((TODOItem i) => TODOListItem(
-                item: i,
-                color: (even = !even) ? theme.highlightColor : null,
-                onStateChange: (TODOItem item) => selectTodoItem(item),
-                onEdit: (TODOItem item) => editItem(item),
-                onDelete: (TODOItem item) => deleteListItem(item),
-              ))
-          .toList(),
+    return ReorderableListView(
+      buildDefaultDragHandles: true,
+      children: [
+        for (int index = 0; index < items.length; index++)
+          TODOListItem(
+            index: index,
+            item: items[index],
+            color: (even = !even) ? oddItemColor : evenItemColor,
+            onStateChange: (TODOItem item) => selectTodoItem(item),
+            onEdit: (TODOItem item) => editItem(item),
+            onDelete: (TODOItem item) => deleteListItem(item),
+          ),
+      ],
+      onReorder: (int oldIndex, int newIndex) {
+        this.reorderListItems(oldIndex, newIndex);
+      },
     );
   }
 
@@ -136,8 +169,24 @@ class _TodoListState extends State<TodoList> {
       bottomNavigationBar: BottomAppBar(
         color: theme.primaryColor,
         shape: const CircularNotchedRectangle(),
-        child: Container(
-          height: 50.0,
+        child: Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.check, color: Colors.lightGreenAccent, size: 33,),
+              tooltip: 'Clear all completed',
+              onPressed: () {
+                cleanDoneItems();
+              },
+            ),
+            Spacer(),
+            IconButton(
+              icon: Icon(Icons.help),
+              tooltip: 'Help',
+              onPressed: () {
+                Navigator.pushNamed(context, '/help');
+              },
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(

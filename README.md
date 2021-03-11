@@ -2,11 +2,37 @@
 
 The Hodes TODO app to learn flutter. This app is meant for leaning purposes. 
 
-## Build
+## Flutter/Dart Techniques learned in this project
+
+* Intermediate Layout With Rows, Cols, Expansible
+* Widget separation
+* Creating custom widgets
+* Integrating custom widgets with third part widgets
+* Routing
+* Dealing with State reactivity
+* Widget tree dynamic arrangement and loader state
+* Future 
+* Using third part packages
+* Database storage
+* Model Serialization with Annotations third part library  
+* Code generation with builders
+* Dealing with nullsafe
+
+## Prepare
 
 First get the dependencies
 
 `flutter pub get`
+
+## Code Generation
+### To generate code for models serialization this project use dart builders
+
+This step is needed only if the models were modified. This will generate the implementation of the 
+serialization and 'unserialization' methods.
+
+`flutter packages pub run build_runner build`
+
+## Build / Run
 
 Then run on the already open emulator
 

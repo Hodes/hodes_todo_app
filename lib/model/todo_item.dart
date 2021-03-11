@@ -1,15 +1,16 @@
+import 'package:json_annotation/json_annotation.dart';
 
+part 'todo_item.g.dart';
+
+@JsonSerializable()
 class TODOItem {
   int? id;
   String? description;
-  bool? done;
+  bool done;
+  int order;
 
-  TODOItem({this.id, this.description, this.done = false});
+  TODOItem({this.id, this.description, this.done = false, this.order = 0});
 
-  Map<String, dynamic> toMap() {
-    return {
-      'description': description,
-      'done': done,
-    };
-  }
+  factory TODOItem.fromJson(Map<String, dynamic> json) => _$TODOItemFromJson(json);
+  Map<String, dynamic> toJson() => _$TODOItemToJson(this);
 }
