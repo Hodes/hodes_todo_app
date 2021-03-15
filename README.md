@@ -41,5 +41,5 @@ Then run on the already open emulator
 
 ## GetX integration notes
 
-To compare the project before migrate to GetX use the tag https://github.com/Hodes/hodes_todo_app/tree/non_getx
+To compare the project before migrate to GetX use the tag https://github.com/Hodes/hodes_todo_app/tree/stateful
 
