@@ -1,6 +1,6 @@
 # hodes_todo_app
 
-The Hodes TODO app to learn flutter. This app is meant for leaning purposes. 
+The Hodes TODO app to learn flutter. This app is meant for learning purposes.
 
 ## Flutter/Dart Techniques learned in this project
 
