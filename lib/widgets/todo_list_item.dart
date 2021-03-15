@@ -4,7 +4,7 @@ import 'package:hodes_todo_app/model/todo_item.dart';
 
 typedef TODOListItemCallback = void Function(TODOItem todoItem);
 
-class TODOListItem extends StatefulWidget {
+class TODOListItem extends StatelessWidget {
   TODOListItem(
       {required this.item,
       required this.index,
@@ -20,21 +20,9 @@ class TODOListItem extends StatefulWidget {
   final TODOListItemCallback? onDelete;
   final Color? color;
 
-  @override
-  _TODOListItemState createState() => _TODOListItemState();
-}
-
-class _TODOListItemState extends State<TODOListItem> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   toggleItemState() {
-    setState(() {
-      widget.item.done = !widget.item.done;
-      widget.onStateChange?.call(widget.item);
-    });
+      item.done = !item.done;
+      onStateChange?.call(item);
   }
 
   @override
@@ -45,20 +33,20 @@ class _TODOListItemState extends State<TODOListItem> {
           Expanded(
             child: InkWell(
               onLongPress: Feedback.wrapForLongPress(
-                  () => widget.onEdit?.call(widget.item), context),
+                      () => onEdit?.call(item), context),
               enableFeedback: true,
               child: CheckboxListTile(
                   controlAffinity: ListTileControlAffinity.leading,
-                  value: widget.item.done,
-                  tileColor: widget.color,
-                  title: Text(widget.item.description!),
+                  value: item.done,
+                  tileColor: color,
+                  title: Text(item.description!),
                   onChanged: (bool? selected) {
                     toggleItemState();
                   }),
             ),
           ),
           ReorderableDragStartListener(
-            index: widget.index,
+            index: index,
             child: SizedBox(
               width: 40,
               child: Icon(Icons.drag_handle),
@@ -72,9 +60,10 @@ class _TODOListItemState extends State<TODOListItem> {
           caption: 'Delete',
           color: Colors.red,
           icon: Icons.delete,
-          onTap: () => widget.onDelete?.call(widget.item),
+          onTap: () => onDelete?.call(item),
         ),
       ],
     );
   }
+
 }

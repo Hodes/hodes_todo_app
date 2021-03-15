@@ -7,13 +7,14 @@ The Hodes TODO app to learn flutter. This app is meant for leaning purposes.
 * Intermediate Layout With Rows, Cols, Expansible
 * Widget separation
 * Creating custom widgets
+* Using third part packages
 * Integrating custom widgets with third part widgets
 * Routing
 * Dealing with State reactivity
+* Integrate with GetX library
 * Widget tree dynamic arrangement and loader state
 * Future 
-* Using third part packages
-* Database storage
+* Database storage (With NoSQL sembast)
 * Model Serialization with Annotations third part library  
 * Code generation with builders
 * Dealing with nullsafe

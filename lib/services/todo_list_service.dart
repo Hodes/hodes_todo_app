@@ -1,14 +1,21 @@
 import 'dart:async';
 
+import 'package:get/get.dart';
 import 'package:hodes_todo_app/model/todo_item.dart';
 import 'package:hodes_todo_app/services/database_service.dart';
 import 'package:sembast/sembast.dart';
 
-class TODOListService {
+class TODOListService extends GetxService {
   String? storeName;
+  DatabaseService? _dbs;
 
   TODOListService() {
     storeName = "todo_list";
+  }
+
+  TODOListService init() {
+    this._dbs = Get.find<DatabaseService>();
+    return this;
   }
 
   TODOItem recordToModel(RecordSnapshot record) {
@@ -23,9 +30,8 @@ class TODOListService {
   }
 
   Future<List<TODOItem>> getAll() async {
-    DatabaseService dbs = DatabaseService();
-    StoreRef store = dbs.getMapStore(storeName);
-    Database? db = await dbs.db;
+    StoreRef store = this._dbs!.getMapStore(storeName);
+    Database? db = await this._dbs!.db;
     var records = await store.find(
       db!,
       finder: Finder(
@@ -40,9 +46,8 @@ class TODOListService {
   }
 
   Future<TODOItem> saveModel(TODOItem item) async {
-    DatabaseService dbs = DatabaseService();
-    StoreRef store = dbs.getMapStore(storeName);
-    Database? db = await dbs.db;
+    StoreRef store = this._dbs!.getMapStore(storeName);
+    Database? db = await this._dbs!.db;
     await db?.transaction((transaction) async {
       if (item.id == null) {
         int key = await store.add(transaction, modelToRecord(item));
@@ -55,9 +60,8 @@ class TODOListService {
   }
 
   Future<TODOItem?> getModel(int id) async {
-    DatabaseService dbs = DatabaseService();
-    StoreRef store = dbs.getMapStore(storeName);
-    Database? db = await dbs.db;
+    StoreRef store = this._dbs!.getMapStore(storeName);
+    Database? db = await this._dbs!.db;
     var record = await store.record(id).get(db!);
     if (record != null) {
       return recordToModel(record);
@@ -67,9 +71,8 @@ class TODOListService {
   }
 
   Future<bool> deleteModel(int? id) async {
-    DatabaseService dbs = DatabaseService();
-    StoreRef store = dbs.getMapStore(storeName);
-    Database? db = await dbs.db;
+    StoreRef store = this._dbs!.getMapStore(storeName);
+    Database? db = await this._dbs!.db;
     try {
       await db?.transaction((transaction) async {
         await store.record(id).delete(transaction);
@@ -80,17 +83,6 @@ class TODOListService {
     }
   }
 
-  List<TODOItem> sortModels(List<TODOItem> models) {
-    models.sort((itemA, itemB) {
-      if(itemA.order < itemB.order){
-        return -1;
-      }else if(itemA.order > itemB.order){
-        return 1;
-      }else{
-        return 0;
-      }
-    });
-    return models;
-  }
+
 
 }

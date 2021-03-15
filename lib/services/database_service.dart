@@ -1,21 +1,20 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 
 const APP_DATABASE_FILENAME = 'todolist.db';
 
-class DatabaseService {
-
-  static final DatabaseService _singleton = DatabaseService._internal();
-  factory DatabaseService() {
-    return _singleton;
-  }
-  DatabaseService._internal();
+class DatabaseService extends GetxService {
 
   Database? _db;
+
+  DatabaseService init() {
+    return this;
+  }
 
   Future<Database?> get db async {
     if(_db != null){
